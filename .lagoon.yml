@@ -18,10 +18,6 @@ tasks:
         command: env
         service: cli
     - run:
-        name: drush cim
-        command: drush -y cim
-        service: cli
-    - run:
         name: drush cr
         command: drush -y cr
         service: cli
