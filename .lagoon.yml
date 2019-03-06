@@ -3,6 +3,17 @@ docker-compose-yaml: docker-compose.yml
 tasks:
   post-rollout:
     - run:
+        name: Sync DB and Files from master if we are not on master
+        command: |
+          if [[ "$LAGOON_GIT_BRANCH" != "master" ]]; then
+            # Only if we don't have a database yet
+            if tables=$(drush sqlq 'show tables;') && [ -z "$tables" ]; then
+                drush sql-sync @lagoon.master @self
+                drush rsync @lagoon.master:%files @self:%files -- --omit-dir-times --no-perms --no-group --no-owner --chmod=ugo=rwX
+            fi
+          fi
+        service: cli
+    - run:
         name: env variables
         command: env
         service: cli
